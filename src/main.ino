@@ -1,10 +1,12 @@
-#define BLUE_LED_PIN 12
-#define BLUE_LED_BTN 13
+#include "Arduino.h"
 
-#define WHITE_LED_PIN 10
-#define WHITE_LED_BTN 11
+#define BLUE_LED_PIN 5
+#define BLUE_LED_BTN 4
 
-#define YELLOW_LED_PIN 8
+#define WHITE_LED_PIN 13
+#define WHITE_LED_BTN 12
+
+#define YELLOW_LED_PIN 10
 #define YELLOW_LED_BTN 9
 
 #define GREEN_LED_PIN 7
@@ -14,7 +16,11 @@
 
 #define POT_PIN A0
 
+enum STATES {INITIAL, GAME_ON};
+bool pressed = false;
+
 void setup() {
+    Serial.begin(115200);
     pinMode(BLUE_LED_PIN, OUTPUT);
     pinMode(BLUE_LED_BTN, INPUT);
     pinMode(WHITE_LED_PIN, OUTPUT);
@@ -25,10 +31,14 @@ void setup() {
     pinMode(GREEN_LED_BTN, INPUT);
     pinMode(RED_LED_PIN, OUTPUT);
     pinMode(POT_PIN, INPUT);
-    Serial.begin(115200);
-
 }
 
 void loop() {
+    pressed = digitalRead(WHITE_LED_BTN);
+    delay(15);
 
+    if (pressed) {
+        digitalWrite(WHITE_LED_PIN, HIGH);
+    }
 }
+
