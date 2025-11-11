@@ -39,6 +39,6 @@ void loop() {
 
     if (pressed) {
         digitalWrite(WHITE_LED_PIN, HIGH);
-    }
+    } 
 }
 
