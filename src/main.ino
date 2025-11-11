@@ -16,7 +16,11 @@
 
 #define POT_PIN A0
 
-enum STATES {INITIAL, GAME_ON};
+enum States {INITIAL, GAME_ON};
+enum Levels {L1, L2, L3};
+
+int potValue = 0;
+int pattern = 2;
 bool pressed = false;
 
 void setup() {
@@ -34,11 +38,11 @@ void setup() {
 }
 
 void loop() {
-    pressed = digitalRead(WHITE_LED_BTN);
-    delay(15);
-
-    if (pressed) {
-        digitalWrite(WHITE_LED_PIN, HIGH);
-    }
+    potValue = analogRead(POT_PIN);
+    int diffMap = map(potValue, 0, 1023, 0, 255);
+    diffMap = diffMap;
+    Serial.print(diffMap);
+    Serial.print("\n");
+    delay(500);
 }
 
