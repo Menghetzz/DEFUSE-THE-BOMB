@@ -28,12 +28,14 @@ const int MAX_PATTERN = 100;
 
 int potValue;
 int pattern;
+int score;
 bool pressed = false;
 const int LEDPINS[] = {WHITE_LED, BLUE_LED, YELLOW_LED, GREEN_LED};
 int gamePattern[MAX_PATTERN];
 int userPattern[MAX_PATTERN];
 
 int indexUser;
+int count = 0;
 
 void setup() {
     Serial.begin(115200);
@@ -49,6 +51,8 @@ void setup() {
     pinMode(POT_PIN, INPUT);
 
     currentState = INITIAL;
+    
+    randomSeed(millis());
 
     timer = new Timer();
 }
@@ -84,17 +88,22 @@ bool checkPattern(){
 }
 
 void loop() {
-    randomSeed(millis());
     switch (currentState){
         case INITIAL:
             potValue = 0;
             pattern = 2;
+            score = 0;
             pressed = digitalRead(GREEN_BTN);
+            if(count == 0) {
+                Serial.println("Press the green button for start the game!");
+                count++;
+            }
             delay(15);
             if(pressed){
                 getPattern();
                 pressed = false;
                 currentState = CREATE_PATTERN;
+                Serial.println("BOMB ACTIVATED. Replicate the pattern.");
             }
             digitalWrite(RED_LED, HIGH);
             break;
@@ -121,25 +130,25 @@ void loop() {
             while(indexUser < pattern && !timerFlag) {
                 if(digitalRead(BLUE_BTN)) {
                     userPattern[indexUser] = BLUE_LED;
-                    Serial.print("blue p");
+                    Serial.println("blue p");
                     indexUser++;
                     delay(150);
                 }
                 if(digitalRead(WHITE_BTN)) {
                     userPattern[indexUser] = WHITE_LED;
-                    Serial.print("white p");
+                    Serial.println("white p");
                     indexUser++;
                     delay(150);
                 }
                 if(digitalRead(GREEN_BTN)) {
                     userPattern[indexUser] = GREEN_LED;
-                    Serial.print("green p");
+                    Serial.println("green p");
                     indexUser++;
                     delay(150);
                 }
                 if(digitalRead(YELLOW_BTN)) {
                     userPattern[indexUser] = YELLOW_LED;
-                    Serial.print("yellow p");
+                    Serial.println("yellow p");
                     indexUser++;
                     delay(150);
                 }
@@ -147,11 +156,17 @@ void loop() {
             
             if(checkPattern()) {
                 pattern++;
-                Serial.write("Going to the next level!!! ");
+                score++;
+                Serial.println("Correct, moving to the next pattern.");
                 currentState = CREATE_PATTERN;
             } else {
-                Serial.write("You lost!!! ");
+                Serial.print("BOOM! You failed! Score: ");
+                Serial.println(score);
+                count = 0;
                 currentState = INITIAL;
+                digitalWrite(RED_LED, HIGH);
+                delay(3000);
+                digitalWrite(RED_LED, LOW);
             }
 
             timerFlag = false;
