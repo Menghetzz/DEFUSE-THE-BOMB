@@ -49,7 +49,7 @@ void setup() {
     timer = new Timer();
 }
 
-// Function to determine the starting pattern based on the difficulty chosen
+// Function to determine the starting pattern based on the difficulty chosen@
 void getPattern (){
     potValue = analogRead(POT_PIN);
     int diffMap = map(potValue, 0, 1023, 0, 255);
