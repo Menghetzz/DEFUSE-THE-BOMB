@@ -1,5 +1,6 @@
 #include "Arduino.h"
 #include "Timer.h"
+#include "pinSetup.h"
 
 #define BLUE_LED 5
 #define BLUE_BTN 4
@@ -39,16 +40,7 @@ int count = 0;
 
 void setup() {
     Serial.begin(115200);
-    pinMode(BLUE_LED, OUTPUT);
-    pinMode(BLUE_BTN, INPUT);
-    pinMode(WHITE_LED, OUTPUT);
-    pinMode(WHITE_BTN, INPUT);
-    pinMode(YELLOW_LED, OUTPUT);
-    pinMode(YELLOW_BTN, INPUT);
-    pinMode(GREEN_LED, OUTPUT);
-    pinMode(GREEN_BTN, INPUT);
-    pinMode(RED_LED, OUTPUT);
-    pinMode(POT_PIN, INPUT);
+    pinSetup();
 
     currentState = INITIAL;
     
