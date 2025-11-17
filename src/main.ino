@@ -1,5 +1,6 @@
 #include "Arduino.h"
 #include "Timer.h"
+#include "pinSetup.h"
 
 #define BLUE_LED 5
 #define BLUE_BTN 4
@@ -22,8 +23,13 @@ Timer* timer;
 enum States {INITIAL, CREATE_PATTERN, GAME_ON};
 States currentState;
 
+<<<<<<< HEAD
 enum Levels {L1 = 1, L2 = 2, L3 = 3};
 const int DIFFRANGE = 86;
+=======
+enum Levels {L1, L2, L3};
+const int DIFFRANGE = 86; // Value given by dividing 255 / 3 (3 Levels)
+>>>>>>> c184df679808cf9cff76e129b322d0f51a0a95c8
 const int MAX_PATTERN = 100;
 
 int potValue;
@@ -40,16 +46,7 @@ int count = 0;
 
 void setup() {
     Serial.begin(115200);
-    pinMode(BLUE_LED, OUTPUT);
-    pinMode(BLUE_BTN, INPUT);
-    pinMode(WHITE_LED, OUTPUT);
-    pinMode(WHITE_BTN, INPUT);
-    pinMode(YELLOW_LED, OUTPUT);
-    pinMode(YELLOW_BTN, INPUT);
-    pinMode(GREEN_LED, OUTPUT);
-    pinMode(GREEN_BTN, INPUT);
-    pinMode(RED_LED, OUTPUT);
-    pinMode(POT_PIN, INPUT);
+    pinSetup();
 
     currentState = INITIAL;
     
@@ -58,6 +55,7 @@ void setup() {
     timer = new Timer();
 }
 
+// Function to determine the starting pattern based on the difficulty chosen@
 void getPattern (){
     potValue = analogRead(POT_PIN);
     diffMap = map(potValue, 0, 1023, 0, 255);
@@ -81,6 +79,7 @@ void getPattern (){
     }
 }
 
+// Function that checks if the user pattern corresponds to the game pattern
 bool checkPattern(){
     for(int i = 0; i < pattern; i++) {
         if(gamePattern[i] != userPattern[i]) {
@@ -108,7 +107,9 @@ void loop() {
                 count++;
             }
             delay(15);
-            if(pressed){
+
+            // Pressing the green button determines state change
+            if(pressed){ 
                 getPattern();
                 pressed = false;
                 currentState = CREATE_PATTERN;
@@ -116,12 +117,13 @@ void loop() {
             }
             digitalWrite(RED_LED, HIGH);
             break;
-        case CREATE_PATTERN:
+        case CREATE_PATTERN: 
             digitalWrite(RED_LED, LOW);
             delay(1000);
 
             indexUser = 0;
 
+            // Here the pattern gets created, saved and shown
             for(int i = 0; i < pattern; i++){
                 gamePattern[i] = LEDPINS[random(4)];
                 delay(1000);
@@ -130,6 +132,7 @@ void loop() {
                 digitalWrite(gamePattern[i], LOW);
             }
 
+            // Timer starts here
             timer->setupPeriod(6500);
             timerFlag = false;
             
@@ -137,6 +140,7 @@ void loop() {
             Serial.println("You now have to recreate the pattern. Be aware of time!");
             break;
         case GAME_ON:
+            // Loop-parser for user input; all inputs get then saved in an array
             while(indexUser < pattern && !timerFlag) {
                 if(digitalRead(BLUE_BTN)) {
                     userPattern[indexUser] = BLUE_LED;
@@ -163,6 +167,9 @@ void loop() {
                     delay(150);
                 }
             }
+            
+            // Last state guard
+            // Inputing the correct pattern increases score and pattern difficulty
             
             if(checkPattern()) {
                 pattern++;

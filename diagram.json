@@ -63,15 +63,6 @@
       "left": 157.4,
       "attrs": { "color": "green" }
     },
-    {
-      "type": "wokwi-text",
-      "id": "text1",
-      "top": -249.6,
-      "left": -384,
-      "attrs": {
-        "text": "Blue: (Button:13, Led:12)\nWhite: (Button:11, Led:10)\nYellow: (Button:9, Led: 8)\nGreen: (Button:7, Led:6)\nRed led: Pin 2"
-      }
-    },
     { "type": "wokwi-potentiometer", "id": "pot1", "top": 220, "left": 160, "attrs": {} },
     { "type": "wokwi-led", "id": "led5", "top": -186, "left": 215, "attrs": { "color": "red" } },
     {
