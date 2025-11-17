@@ -23,13 +23,8 @@ Timer* timer;
 enum States {INITIAL, CREATE_PATTERN, GAME_ON};
 States currentState;
 
-<<<<<<< HEAD
 enum Levels {L1 = 1, L2 = 2, L3 = 3};
 const int DIFFRANGE = 86;
-=======
-enum Levels {L1, L2, L3};
-const int DIFFRANGE = 86; // Value given by dividing 255 / 3 (3 Levels)
->>>>>>> c184df679808cf9cff76e129b322d0f51a0a95c8
 const int MAX_PATTERN = 100;
 
 int potValue;
