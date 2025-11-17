@@ -22,7 +22,7 @@ Timer* timer;
 enum States {INITIAL, CREATE_PATTERN, GAME_ON};
 States currentState;
 
-enum Levels {L1, L2, L3};
+enum Levels {L1 = 1, L2 = 2, L3 = 3};
 const int DIFFRANGE = 86;
 const int MAX_PATTERN = 100;
 
@@ -30,6 +30,7 @@ int potValue;
 int pattern;
 int score;
 bool pressed = false;
+int diffMap;
 const int LEDPINS[] = {WHITE_LED, BLUE_LED, YELLOW_LED, GREEN_LED};
 int gamePattern[MAX_PATTERN];
 int userPattern[MAX_PATTERN];
@@ -59,20 +60,23 @@ void setup() {
 
 void getPattern (){
     potValue = analogRead(POT_PIN);
-    int diffMap = map(potValue, 0, 1023, 0, 255);
-    diffMap = diffMap / DIFFRANGE;
+    diffMap = map(potValue, 0, 1023, 0, 255);
+    diffMap = (diffMap / DIFFRANGE) + 1;
 
     switch(diffMap) {
         case L1:
             pattern += L1;
+            Serial.println("You chose EASY MODE");
             break;
 
         case L2:
             pattern += L2;
+            Serial.println("You chose MEDIUM MODE");
             break;
 
         case L3:
             pattern += L3;
+            Serial.println("You chose HARD MODE");
             break;
     }
 }
@@ -91,11 +95,16 @@ void loop() {
     switch (currentState){
         case INITIAL:
             potValue = 0;
-            pattern = 2;
+            pattern = 1;
             score = 0;
             pressed = digitalRead(GREEN_BTN);
             if(count == 0) {
-                Serial.println("Press the green button for start the game!");
+                Serial.println("== GAME STARTED ==");
+                Serial.println("---- Rotate left for EASY MODE ---- ");
+                Serial.println("---- Rotate in center for MEDIUM MODE ----");
+                Serial.println("---- Rotate right for HARD MODE ----");
+                Serial.println("");
+                Serial.println("== Press the green button for start ==");
                 count++;
             }
             delay(15);
@@ -103,7 +112,7 @@ void loop() {
                 getPattern();
                 pressed = false;
                 currentState = CREATE_PATTERN;
-                Serial.println("BOMB ACTIVATED. Replicate the pattern.");
+                Serial.println("BOMB ACTIVATED. Watch out to the pattern.");
             }
             digitalWrite(RED_LED, HIGH);
             break;
@@ -125,30 +134,31 @@ void loop() {
             timerFlag = false;
             
             currentState = GAME_ON;
+            Serial.println("You now have to recreate the pattern. Be aware of time!");
             break;
         case GAME_ON:
             while(indexUser < pattern && !timerFlag) {
                 if(digitalRead(BLUE_BTN)) {
                     userPattern[indexUser] = BLUE_LED;
-                    Serial.println("blue p");
+                    Serial.println("blue button pressed");
                     indexUser++;
                     delay(150);
                 }
                 if(digitalRead(WHITE_BTN)) {
                     userPattern[indexUser] = WHITE_LED;
-                    Serial.println("white p");
+                    Serial.println("white button pressed");
                     indexUser++;
                     delay(150);
                 }
                 if(digitalRead(GREEN_BTN)) {
                     userPattern[indexUser] = GREEN_LED;
-                    Serial.println("green p");
+                    Serial.println("green button pressed");
                     indexUser++;
                     delay(150);
                 }
                 if(digitalRead(YELLOW_BTN)) {
                     userPattern[indexUser] = YELLOW_LED;
-                    Serial.println("yellow p");
+                    Serial.println("yellow button pressed");
                     indexUser++;
                     delay(150);
                 }
@@ -157,11 +167,12 @@ void loop() {
             if(checkPattern()) {
                 pattern++;
                 score++;
-                Serial.println("Correct, moving to the next pattern.");
+                Serial.println("Correct, moving to the next pattern, increased by one.");
                 currentState = CREATE_PATTERN;
             } else {
                 Serial.print("BOOM! You failed! Score: ");
-                Serial.println(score);
+                Serial.println(score * diffMap);
+                Serial.println("---------------------------------");
                 count = 0;
                 currentState = INITIAL;
                 digitalWrite(RED_LED, HIGH);
