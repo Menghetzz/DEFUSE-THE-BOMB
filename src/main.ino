@@ -93,7 +93,7 @@ void loop() {
             score = 0;
             pressed = digitalRead(GREEN_BTN);
             if(count == 0) {
-                Serial.println("== GAME STARTED ==");
+                Serial.println("         == GAME STARTED ==");
                 Serial.println("---- Rotate left for EASY MODE ---- ");
                 Serial.println("---- Rotate in center for MEDIUM MODE ----");
                 Serial.println("---- Rotate right for HARD MODE ----");

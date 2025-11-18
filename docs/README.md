@@ -6,7 +6,8 @@ CONTRIBUTORI:
 
 SVILUPPO:
 
-L'approccio iniziale scelto per lo sviluppo del progetto consiste nella suddivisione di 3 stati di cui 2 principali e uno intermedio senza guardia.
+L'approccio iniziale scelto per lo sviluppo del progetto consiste nella suddivisione di 3 stati di cui 2 principali e uno intermedio senza guardia. 
+Il gioco è endless, con un moltiplicatore dello score che varia in base alla difficoltà scelta prima dell'inizio della partita.
 
 Tali stati sono:
  - INITIAL: dove il programma attende due input dell'utente, quali impostare la difficoltà tramite potenziometro e pressione del bottone verde per avviare il gioco.
