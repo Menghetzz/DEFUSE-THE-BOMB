@@ -1,5 +1,4 @@
 #include "Arduino.h"
-#include "Timer.h"
 #include "pinSetup.h"
 
 #define BLUE_LED 5
@@ -17,8 +16,6 @@
 #define RED_LED 2
 
 #define POT_PIN A0
-
-Timer* timer;
 
 enum States {INITIAL, CREATE_PATTERN, GAME_ON};
 States currentState;
@@ -38,6 +35,8 @@ int userPattern[MAX_PATTERN];
 
 int indexUser;
 int count = 0;
+unsigned long baseTime;
+unsigned long startTime;
 
 void setup() {
     Serial.begin(115200);
@@ -45,30 +44,36 @@ void setup() {
 
     currentState = INITIAL;
     
+    // Initialize the seed to guarantee randomness
     randomSeed(millis());
-
-    timer = new Timer();
 }
 
-// Function to determine the starting pattern based on the difficulty chosen@
+// Function to determine the starting pattern based on the difficulty chosen, chosen by the potentiometer
 void getPattern (){
     potValue = analogRead(POT_PIN);
     diffMap = map(potValue, 0, 1023, 0, 255);
     diffMap = (diffMap / DIFFRANGE) + 1;
 
+    // Switch that takes the diffMap as input so it can sets the base pattern length and the base time
     switch(diffMap) {
         case L1:
+            // EASY MODE
             pattern += L1;
+            baseTime = 10000;
             Serial.println("You chose EASY MODE");
             break;
 
         case L2:
+            // MEDIUM MODE
             pattern += L2;
+            baseTime = 8000;
             Serial.println("You chose MEDIUM MODE");
             break;
 
         case L3:
+            // HARD MODE
             pattern += L3;
+            baseTime = 6000;
             Serial.println("You chose HARD MODE");
             break;
     }
@@ -115,9 +120,7 @@ void loop() {
         case CREATE_PATTERN: 
             digitalWrite(RED_LED, LOW);
             delay(1000);
-
             indexUser = 0;
-
             // Here the pattern gets created, saved and shown
             for(int i = 0; i < pattern; i++){
                 gamePattern[i] = LEDPINS[random(4)];
@@ -126,17 +129,15 @@ void loop() {
                 delay(1000);
                 digitalWrite(gamePattern[i], LOW);
             }
-
-            // Timer starts here
-            timer->setupPeriod(6500);
-            timerFlag = false;
-            
+            // The timer starts here
+            startTime = millis();
             currentState = GAME_ON;
             Serial.println("You now have to recreate the pattern. Be aware of time!");
             break;
         case GAME_ON:
-            // Loop-parser for user input; all inputs get then saved in an array
-            while(indexUser < pattern && !timerFlag) {
+            // The loop checks whenever the timer is equals to the basetime given by the difficulty && the index user inside the userPattern
+            while(indexUser < pattern && (millis() - startTime < baseTime)) {
+                // Loop-parser for user input; all inputs get then saved in an array. 
                 if(digitalRead(BLUE_BTN)) {
                     userPattern[indexUser] = BLUE_LED;
                     Serial.println("Blue button pressed");
@@ -162,27 +163,31 @@ void loop() {
                     delay(150);
                 }
             }
-            
             // Last state guard
             // Inputing the correct pattern increases score and pattern difficulty
             
             if(checkPattern()) {
                 pattern++;
                 score++;
+                // Decrease the baseTime to guarantee a more difficulty level whenever the pattern is correct. The baseTime will not going under 2 seconds.
+                if(baseTime > 2000) {   
+                    baseTime -= 500;
+                }
                 Serial.println("Correct, moving to the next pattern, increased by one.");
                 currentState = CREATE_PATTERN;
             } else {
+                // Here the player have lost, and they will appear some stuff on the screen
                 Serial.print("BOOM! You failed! Score: ");
+                // The score has a multiplier on the difficulty chosen at the start
                 Serial.println(score * diffMap);
                 Serial.println("---------------------------------");
                 count = 0;
+                // Set the state to INITIAL and the player can make another try, as long as he wants, whenever he presses the green button 
                 currentState = INITIAL;
                 digitalWrite(RED_LED, HIGH);
                 delay(3000);
                 digitalWrite(RED_LED, LOW);
             }
-
-            timerFlag = false;
             break;
         }
     }
