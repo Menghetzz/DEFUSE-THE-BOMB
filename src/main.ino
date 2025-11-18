@@ -139,25 +139,25 @@ void loop() {
             while(indexUser < pattern && !timerFlag) {
                 if(digitalRead(BLUE_BTN)) {
                     userPattern[indexUser] = BLUE_LED;
-                    Serial.println("blue button pressed");
+                    Serial.println("Blue button pressed");
                     indexUser++;
                     delay(150);
                 }
                 if(digitalRead(WHITE_BTN)) {
                     userPattern[indexUser] = WHITE_LED;
-                    Serial.println("white button pressed");
+                    Serial.println("White button pressed");
                     indexUser++;
                     delay(150);
                 }
                 if(digitalRead(GREEN_BTN)) {
                     userPattern[indexUser] = GREEN_LED;
-                    Serial.println("green button pressed");
+                    Serial.println("Green button pressed");
                     indexUser++;
                     delay(150);
                 }
                 if(digitalRead(YELLOW_BTN)) {
                     userPattern[indexUser] = YELLOW_LED;
-                    Serial.println("yellow button pressed");
+                    Serial.println("Yellow button pressed");
                     indexUser++;
                     delay(150);
                 }
